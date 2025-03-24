@@ -48,6 +48,18 @@ class Cobra extends Entidade {
         } else if (teclasPressionadas.KeyD) {
             this.x += 7;
         }
+
+        
+        if (
+            this.x < 0 || 
+            this.x + this.largura > canvas.width || 
+            this.y < 0 || 
+            this.y + this.height > canvas.height
+        ) {
+            return true; 
+        }
+
+        return false; 
     }
     
     desenhar() {
@@ -55,7 +67,7 @@ class Cobra extends Entidade {
         ctx.fillRect(this.x, this.y, this.largura, this.altura);
     }
     
-    verificarColisao(comida){
+    verificarColisao(comida) {
         if (
             this.x < comida.x + comida.largura &&
             this.x + this.largura > comida.x &&
@@ -86,12 +98,32 @@ class Comida extends Entidade {
 const cobra = new Cobra(100, 200, 20, 20);
 const comida = new Comida();
 
+let gameOver = false; 
+
+function exibirGameOver() {
+    ctx.fillStyle = 'white';
+    ctx.font = '30px Arial';
+    ctx.fillText('Game Over', canvas.width / 2 - 100, canvas.height / 2);
+}
+
 function loop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    if (gameOver) {
+        exibirGameOver();
+        return; 
+    }
+
     cobra.desenhar();
-    cobra.atualizar();
+    
+    if (cobra.atualizar()) { 
+        gameOver = true; 
+    }
+    
     comida.desenhar();
     cobra.verificarColisao(comida);
+    
     requestAnimationFrame(loop);
 }
+
 loop();
